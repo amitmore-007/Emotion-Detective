@@ -7,11 +7,11 @@
 [![React](https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?style=for-the-badge&logo=node.js)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-000000?style=for-the-badge&logo=express)](https://expressjs.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
 
 *Transform the complex world of sentiment analysis into an interactive adventure designed specifically for 6th-grade students*
 
-[🚀 Live Demo](https://emotion-detective-1.onrender.com/) • [📖 Documentation](#features) • [🎮 Try It Now](#quick-start)
+[🚀 Live Demo](https://emotion-detective-1.onrender.com/) 
 
 </div>
 
