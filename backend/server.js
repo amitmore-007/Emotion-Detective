@@ -57,23 +57,37 @@ app.get('/health', (req, res) => {
 // Routes - Place API routes before static file serving
 app.use('/api', routes);
 
-// For development, just show API info at root
-if (config.nodeEnv !== 'production') {
-  app.get('/', (req, res) => {
-    res.status(200).json({
-      success: true,
-      message: 'Emotion Detective API is running!',
-      version: '1.0.0',
-      environment: config.nodeEnv,
-      endpoints: {
-        health: '/health',
-        sentiment: '/api/sentiment/analyze',
-        story: '/api/story/chapters'
+// Root route with comprehensive API information
+app.get('/', (req, res) => {
+  const uptime = process.uptime();
+  const uptimeFormatted = `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m ${Math.floor(uptime % 60)}s`;
+  
+  res.status(200).json({
+    success: true,
+    message: 'Emotion Detective API is running!',
+    version: '1.0.0',
+    environment: config.nodeEnv,
+    uptime: uptimeFormatted,
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      sentiment: {
+        analyze: '/api/sentiment/analyze',
+        description: 'POST - Analyze sentiment of text'
       },
-      documentation: 'Visit /health for health check'
-    });
+      story: {
+        chapters: '/api/story/chapters',
+        description: 'GET - Retrieve story chapters'
+      }
+    },
+    usage: {
+      example: 'POST /api/sentiment/analyze with {"text": "I love this!", "method": "both"}',
+      cors: 'CORS enabled for allowed origins',
+      contentType: 'application/json'
+    },
+    status: 'Backend is operational and ready to serve requests'
   });
-}
+});
 
 // Error handling middleware
 app.use(errorHandler);
