@@ -54,6 +54,22 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Root route - Add this before your API routes
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Emotion Detective API is running!',
+    version: '1.0.0',
+    environment: config.nodeEnv,
+    endpoints: {
+      health: '/health',
+      sentiment: '/api/sentiment/analyze',
+      story: '/api/story/chapters'
+    },
+    documentation: 'Visit /health for health check'
+  });
+});
+
 // Routes
 app.use('/api', routes);
 

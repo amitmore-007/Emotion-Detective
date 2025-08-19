@@ -4,17 +4,22 @@ const storyRoutes = require('./storyRoutes');
 
 const router = express.Router();
 
-// Mount routes
-router.use('/sentiment', sentimentRoutes);
-router.use('/story', storyRoutes);
-
-// Health check endpoint
-router.get('/health', (req, res) => {
+// API status endpoint
+router.get('/', (req, res) => {
   res.json({
-    status: 'OK',
-    message: 'Emotion Detective API is running!',
-    timestamp: new Date().toISOString()
+    success: true,
+    message: 'Emotion Detective API',
+    version: '1.0.0',
+    availableEndpoints: [
+      'GET /api/story/chapters',
+      'GET /api/story/:chapter',
+      'POST /api/sentiment/analyze'
+    ]
   });
 });
+
+// Mount route modules
+router.use('/sentiment', sentimentRoutes);
+router.use('/story', storyRoutes);
 
 module.exports = router;

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ArrowLeft, CheckCircle, AlertCircle, Sparkles, Brain, Heart, Zap, Star, Crown, Lock } from 'lucide-react';
 import SentimentAnalyzer from './SentimentAnalyzer';
 import { useTheme } from '../contexts/ThemeContext';
+import { apiCall } from '../config/api';
 
 const StoryMode = ({ currentUser }) => {
   const [currentChapter, setCurrentChapter] = useState(1);
@@ -11,7 +12,27 @@ const StoryMode = ({ currentUser }) => {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [storyAnimation, setStoryAnimation] = useState('intro');
   const [particleSystem, setParticleSystem] = useState([]);
+  const [storyData, setStoryData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { isDark } = useTheme();
+
+  // Load story data from API
+  useEffect(() => {
+    const loadStoryData = async () => {
+      try {
+        const data = await apiCall('/api/story/chapters');
+        setStoryData(data.chapters);
+      } catch (error) {
+        console.error('Failed to load story data:', error);
+        // Fallback to local data if API fails
+        setStoryData(chapters);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadStoryData();
+  }, []);
 
   // Generate magical particles
   useEffect(() => {
@@ -87,7 +108,7 @@ const StoryMode = ({ currentUser }) => {
     }
   ];
 
-  const currentChapterData = chapters.find(ch => ch.id === currentChapter);
+  const currentChapterData = storyData?.[currentChapter] || chapters.find(ch => ch.id === currentChapter);
 
   const handleMessageClick = (message) => {
     // Reset analysis state when selecting a new message
@@ -145,6 +166,25 @@ const StoryMode = ({ currentUser }) => {
     ).length;
     return (completedMessages / chapter.messages.length) * 100;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 to-indigo-900">
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full mx-auto mb-4"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <p className="text-white text-xl">Loading magical story...</p>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full relative overflow-x-hidden overflow-y-auto">
