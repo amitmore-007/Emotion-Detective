@@ -524,18 +524,18 @@ const StoryMode = ({ currentUser }) => {
                                   <div className="flex items-center space-x-3">
                                     <span
                                       className={`px-3 py-1 rounded-full text-xs font-bold text-white ${
-                                        message.difficulty === 'easy' ? 'bg-emerald-500' :
-                                        message.difficulty === 'medium' ? 'bg-amber-500' :
-                                        message.difficulty === 'hard' ? 'bg-red-500' : 
+                                        (message.difficulty || 'easy') === 'easy' ? 'bg-emerald-500' :
+                                        (message.difficulty || 'easy') === 'medium' ? 'bg-amber-500' :
+                                        (message.difficulty || 'easy') === 'hard' ? 'bg-red-500' : 
                                         'bg-purple-500'
                                       }`}
                                     >
-                                      {message.difficulty.toUpperCase()}
+                                      {(message.difficulty || 'easy').toUpperCase()}
                                     </span>
                                     
                                     {isCompleted && (
                                       <div className="flex items-center space-x-2">
-                                        <span className="text-2xl">{message.reward}</span>
+                                        <span className="text-2xl">{message.reward || '⭐'}</span>
                                         <span className="text-emerald-300 font-bold text-xs">EARNED!</span>
                                       </div>
                                     )}
