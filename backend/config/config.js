@@ -6,7 +6,7 @@ const config = {
   corsOrigin: process.env.NODE_ENV === 'production' 
     ? [
         process.env.FRONTEND_URL,
-        'https://your-frontend-app.onrender.com', // Replace with your actual frontend URL
+        'https://emotion-detective-1.onrender.com', // Replace with your actual frontend URL
         /\.onrender\.com$/, // Allow all onrender.com subdomains
       ]
     : [

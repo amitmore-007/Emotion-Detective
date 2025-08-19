@@ -124,6 +124,4 @@ Feel free to contribute by:
 - Adding more analysis methods
 - Creating additional exercises
 
-## License
 
-This project is created for educational purposes.
