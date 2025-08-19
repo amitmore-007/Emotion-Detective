@@ -1,23 +1,25 @@
 services:
-  # Combined Frontend + Backend Service
+  # Backend API Service
   - type: web
-    name: emotion-detective-app
+    name: emotion-detective-api
     env: node
-    buildCommand: |
-      cd frontend && npm install && npm run build
-      cd ../backend && npm install
-    startCommand: cd backend && npm start
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
-      - key: VITE_API_URL
-        value: https://emotion-detective-app.onrender.com
     healthCheckPath: /health
+
+  # Frontend Static Site
+  - type: web
+    name: emotion-detective-frontend
     env: static
-    buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: frontend/dist
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
         fromService:

@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const config = require('./config/config');
 const routes = require('./routes');
 const errorHandler = require('./middleware/errorHandler');
@@ -46,12 +45,6 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
-// Serve static files from React build (for production)
-if (config.nodeEnv === 'production') {
-  const buildPath = path.join(__dirname, '../frontend/dist');
-  app.use(express.static(buildPath));
-}
-
 // Health check endpoint for Render
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -61,13 +54,12 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Root route - Add this before your API routes
-app.get('/', (req, res) => {
-  if (config.nodeEnv === 'production') {
-    // In production, serve the React app
-    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-  } else {
-    // In development, show API info
+// Routes - Place API routes before static file serving
+app.use('/api', routes);
+
+// For development, just show API info at root
+if (config.nodeEnv !== 'production') {
+  app.get('/', (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Emotion Detective API is running!',
@@ -80,16 +72,6 @@ app.get('/', (req, res) => {
       },
       documentation: 'Visit /health for health check'
     });
-  }
-});
-
-// Routes
-app.use('/api', routes);
-
-// Catch-all handler: send back React's index.html file for any non-API routes
-if (config.nodeEnv === 'production') {
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
   });
 }
 
@@ -105,6 +87,23 @@ app.use('/api/*', (req, res) => {
 });
 
 const PORT = config.port;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Emotion Detective API running on port ${PORT}`);
+  console.log(`🌍 Environment: ${config.nodeEnv}`);
+  console.log(`🔗 CORS Origins:`, config.corsOrigin);
+});
+// Error handling middleware
+app.use(errorHandler);
+
+// 404 handler for API routes only
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'API route not found'
+  });
+});
+
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Emotion Detective API running on port ${PORT}`);
