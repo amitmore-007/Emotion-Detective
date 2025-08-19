@@ -88,29 +88,41 @@ app.use('/api/*', (req, res) => {
 
 const PORT = config.port;
 
-app.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Emotion Detective API running on port ${PORT}`);
   console.log(`🌍 Environment: ${config.nodeEnv}`);
   console.log(`🔗 CORS Origins:`, config.corsOrigin);
 });
-// Error handling middleware
-app.use(errorHandler);
 
-// 404 handler for API routes only
-app.use('/api/*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'API route not found'
+// Handle server errors gracefully
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use.`);
+    console.log('💡 Solutions:');
+    console.log('   1. Stop the existing process using that port');
+    console.log('   2. Change the PORT in your .env file');
+    console.log('   3. Kill the process: npx kill-port 5000');
+    process.exit(1);
+  } else {
+    console.error('❌ Server error:', err);
+    process.exit(1);
+  }
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('🔄 Received SIGTERM, shutting down gracefully...');
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
   });
 });
 
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Emotion Detective API running on port ${PORT}`);
-  console.log(`🌍 Environment: ${config.nodeEnv}`);
-  console.log(`🔗 CORS Origins:`, config.corsOrigin);
-  if (config.nodeEnv === 'production') {
-    console.log(`📁 Serving static files from: ${path.join(__dirname, '../frontend/dist')}`);
-  }
+process.on('SIGINT', () => {
+  console.log('\n🔄 Received SIGINT, shutting down gracefully...');
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
 });
 
